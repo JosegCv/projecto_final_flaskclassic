@@ -1,0 +1,20 @@
+{% extends "base.html" %}
+{% block content%}
+        <h1>Mis movimientos</h1>
+        <table>
+            <tr>
+                <th>Fecha</th>
+                <th>Concepto</th>
+                <th>Importe</th>
+            </tr>
+            {% for movement in the_movements%}
+            <tr>
+                <td>{{ movement.date }}</td>
+                <td>{{ movement.abstract }}</td>
+                <td>{{ movement.amount }} {{ movement.currency }}</td>
+                <td><a href="/update_movement/{{ movement.id }}">Editar</a></td>
+            </tr>
+            {% endfor %}
+
+        </table>
+{% endblock %}
