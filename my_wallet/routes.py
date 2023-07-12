@@ -8,3 +8,7 @@ def index():
 @app.route("/purchase")
 def purchase():
     return render_template("purchase.html")
+
+@app.route("/status")
+def status():
+    return render_template("status.html")
