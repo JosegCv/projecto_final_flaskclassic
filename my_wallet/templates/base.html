@@ -12,9 +12,29 @@
     </header>
     <nav class="container">
         <ul>
-            <li><a href="/">Inicio</a></li>
-            <li><a href="/purchase">Compra</a></li>
-            <li><a href="/status">Status</a></li>
+            
+            <li>
+                {% if request.path == '/' %}
+                  <span>Inicio</span>
+                {% else %}
+                  <a href="/">Inicio</a>
+                {% endif %}
+              </li>
+              <li>
+                {% if request.path == '/purchase' %}
+                  <span>Purchase And Trades</span>
+                {% else %}
+                  <a href="/purchase">Purchase And Trades</a>
+                {% endif %}
+              </li>
+              <li>
+                {% if request.path == '/status' %}
+                  <span>Status Sumary</span>
+                {% else %}
+                  <a href="/status">Status Sumary
+                  </a>
+                {% endif %}
+              </li>
         </ul>
 
     </nav>
