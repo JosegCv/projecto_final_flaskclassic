@@ -1,5 +1,7 @@
 from my_wallet import app
+from my_wallet.forms import *
 from flask import render_template, request, redirect, flash, url_for
+
 
 @app.route("/")
 def index():

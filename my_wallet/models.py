@@ -2,6 +2,12 @@ from datetime import *
 import os
 import sqlite3
 
+CURRENCIES =  ["EUR", "BTC",
+    "ETH", "USDT",
+    "BNB", "XRP",
+    "ADA", "SOL",
+    "DOT", "MATIC"]
+
 class Registros:
     def __init__(self, date_hour, currency_from, quantity_from, currency_to, quantity_to,  id = None):
         self.date_hour = date_hour
@@ -23,22 +29,35 @@ class Registros:
             raise ValueError("Date must be Today or a Date Before")
         
     @property
-    def quantity(self):
-        pass
+    def quantity_from(self):
+        return self._quantity_to
     
-    @quantity.setter
-    def amount(self, value):
-        self._quantity = float(value)
-        if self._quantity == 0:
-            raise ValueError("amount must be positive or negative")
+    @quantity_from.setter
+    def quantity_from(self, value):
+        self._quantity_to = float(value)
+        if self._quantity_to <= 0:
+            raise ValueError(" must be positive amount")
         
     @property
-    def currency(self):
-        pass
+    def currency_from(self):
+        return self._currency_from
     
-    @currency.setter
+    @currency_from.setter
+    def currency_from(self, value):
+        self._currency_from = value
+        if self._currency not in CURRENCIES:
+            raise ValueError(f"currency must be in {CURRENCIES}")
+    
+    @currency_from.setter
     def currency(self, value):
       pass
+
+    def __eq__(self, other):
+        return self.date_hour == other.date_hour and self.currency_from == other.currency_from and self.quantity_from == other.quantity_from and self.currency_to == other.currency_to and self.quantity_to == other.quantity_to
+        #return (self.date_hour, self.currency_from, self.quantity_from, self.currency_to, self.quantity_to) == (other.date_hour, other.currency_from, other.quantity_from, other.currency_to, other.quantity_to)
+    def __repr__(self):
+        return f"Movimiento: {self.date_hour} - {self.currency_from} - {self.quantity_from} - {self.currency_to} - {self.quantity_to}"
+    
 class MovementDAOsqlite:
     def __init__(self, db_path):
         self.path = db_path
