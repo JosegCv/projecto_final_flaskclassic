@@ -1,17 +1,27 @@
 {% extends "base.html" %}
 {% block content%}
 
-        <h1>Mis movimientos</h1>
+        <h1>Account State</h1>
         
         <table>
             <tr>
                 <th>Date / Hour</th>
-                <th>From</th>
-                <th>From Quantity</th>
-                <th>To</th>
+                <th>From Currency</th>
+                <th>Quantity</th>
+                <th>Currency To</th>
                 <th>Quantity to</th>
                 <th>Unit Price</th>
             </tr>
-
+            {% for mov in movs %}
+            <tr>
+                <td>{{ mov.date_hour }}</td>
+                <td>{{ mov.currency_from }}</td>
+                <td>{{ mov.quantity_from }}</td>
+                <td>{{ mov.currency_to }}</td>
+                <td>{{ mov.quantity_to }}</td>
+                <td>{{ mov.unit_price }}</td>
+            
+            </tr>
+            {% endfor %}
         </table>
 {% endblock %}

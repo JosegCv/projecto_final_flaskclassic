@@ -63,7 +63,7 @@ class MovementDAOsqlite:
         self.path = db_path
 
         query = """
-        CREATE TABLE IF NOT EXISTS "registros" (
+        CREATE TABLE IF NOT EXISTS "movements" (
             "id"	INTEGER,
             "date_hour"	TEXT NOT NULL,
             "currency_from"	TEXT NOT NULL,
@@ -72,16 +72,17 @@ class MovementDAOsqlite:
             "quantity_to"	REAL NOT NULL,
             PRIMARY KEY("id" AUTOINCREMENT)
         );
-        
+        """
         conn = sqlite3.connect(self.path)
         cur = conn.cursor()
         cur.execute(query)
-        conn.close()"""
+        conn.commit()
+        conn.close()
 
-    def insert(self, movement):
+    def insert(self, movement): 
 
         query = """
-        INSERT INTO registros
+        INSERT INTO movements
                (date_hour,currency_from,quantity_from,currency_to,quantity_to,)
         VALUES (?, ?, ?, ?, ?)
         """
