@@ -9,10 +9,10 @@ CURRENCIES =  ["EUR", "BTC",
     "DOT", "MATIC"]
 
 class Registros:
-    def __init__(self, date_hour, currency_from, quantity_from, currency_to, quantity_to,  id = None):
+    def __init__(self, date_hour, currency_from, quantity_from, currency_to, quantity_to,unit_price,  id = None):
         self.date_hour = date_hour
         self.id = id
-
+        self.unit_price = unit_price
         self.currency_from = currency_from
         self.quantity_from = quantity_from
         self.currency_to = currency_to
@@ -23,9 +23,9 @@ class Registros:
         return self._date
     
     @date_hour.setter
-    def _date(self, value):
-        self._date = date.fromisoformat(value)
-        if self._date > date.today():
+    def date_hour(self, value):
+        self._date = datetime.fromisoformat(value)
+        if self._date > datetime.today():
             raise ValueError("Date must be Today or a Date Before")
         
     @property
@@ -45,7 +45,7 @@ class Registros:
     @currency_from.setter
     def currency_from(self, value):
         self._currency_from = value
-        if self._currency not in CURRENCIES:
+        if self._currency_from not in CURRENCIES:
             raise ValueError(f"currency must be in {CURRENCIES}")
     
     @currency_from.setter
@@ -64,13 +64,14 @@ class MovementDAOsqlite:
 
         query = """
         CREATE TABLE IF NOT EXISTS "movements" (
-            "id"	INTEGER,
-            "date_hour"	TEXT NOT NULL,
-            "currency_from"	TEXT NOT NULL,
-            "quantity_from"	REAL NOT NULL,
-            "currency_to"	TEXT NOT NULL,
-            "quantity_to"	REAL NOT NULL,
-            PRIMARY KEY("id" AUTOINCREMENT)
+	    "id"	INTEGER UNIQUE,
+	    "date_hour"	TEXT NOT NULL,
+	    "currency_from"	TEXT NOT NULL,
+	    "quantity_from"	REAL NOT NULL,
+	    "currency_to"	TEXT NOT NULL,
+	    "quantity_to"	REAL NOT NULL,
+	    "unit_price"	INTEGER,
+	    PRIMARY KEY("id" AUTOINCREMENT)
         );
         """
         conn = sqlite3.connect(self.path)
@@ -83,20 +84,20 @@ class MovementDAOsqlite:
 
         query = """
         INSERT INTO movements
-               (date_hour,currency_from,quantity_from,currency_to,quantity_to,)
-        VALUES (?, ?, ?, ?, ?)
+               (date_hour,currency_from,quantity_from,currency_to,quantity_to,unit_price)
+        VALUES ( ?, ?, ?, ?, ?, ?)
         """
 
         conn = sqlite3.connect(self.path)
         cur = conn.cursor()
         cur.execute(query, (movement.date_hour, movement.currency_from,
-                            movement.quantity_from, movement.currency_to, movement.quantity_to))
+                            movement.quantity_from, movement.currency_to, movement.quantity_to, movement.unit_price))
         conn.commit()
         conn.close()
 
     def get(self, id):
         query = """
-        SELECT date_hour, currency_from,quantity_from,currency_to,quantity_to, id
+        SELECT date_hour, currency_from,quantity_from,currency_to,quantity_to, id, unit_price
           FROM movements
          WHERE id = ?;
         """
@@ -111,7 +112,7 @@ class MovementDAOsqlite:
         
     def get_all(self):
         query = """
-        SELECT date_hour,currency_to,quantity_to,currency_to,quantity_to, id
+        SELECT date_hour,currency_from,quantity_from,currency_to,quantity_to,unit_price
           FROM movements
          ORDER by date_hour;
         """
