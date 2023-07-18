@@ -70,7 +70,7 @@ class MovementDAOsqlite:
 	    "quantity_from"	REAL NOT NULL,
 	    "currency_to"	TEXT NOT NULL,
 	    "quantity_to"	REAL NOT NULL,
-	    "unit_price"	INTEGER,
+	    "unit_price"	REAL NOT NULL,
 	    PRIMARY KEY("id" AUTOINCREMENT)
         );
         """
