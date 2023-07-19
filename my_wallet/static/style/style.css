@@ -1,0 +1,12 @@
+/* Estilo para la etiqueta <div> */
+.grid-div {
+    /* Disposición en grid */
+    display: grid;
+  
+    /* Tamaño específico */
+    width: 300px;
+    height: 200px;
+}
+.grid-div.right-aligned {
+    justify-self: end;
+  }

@@ -4,15 +4,24 @@
         <h1>cripto currency value and Purchase info</h1>
         <form action="/purchase.html" method="post">
         {{ the_form.csrf_token }}
-        <div>
+        <div class="grid-div">
            {{ the_form.currency_in.label }}
-           <select name="{{ the_form.currency_in.name }}" id="{{ the_form.currency_in.id }}"></select>
-          
-                {% if the_form.currency_in.errors %}
-              {% for mensaje in the_form.currency_in.errors %}
-                <p class="error">{{ mensaje }}</p>
-              {% endfor %}
-           {% endif %}
+           {{ the_form.currency_in }}
+        </div>
+
+        <div class="grid-div">
+          {{ the_form.quantity_in.label }}
+          {{ the_form.quantity_in }}
+        </div>
+
+        <div class="grid-div right-aligned">
+          {{ the_form.currency_out.label}}
+          {{ the_form.currency_out }}
+        </div>
+
+        <div class="grid-div right-aligned">
+          {{ the_form.quantity_out.label}}
+          {{ the_form.quantity_out }}
         </div>
         </form>  
 {% endblock %}

@@ -19,15 +19,15 @@ def index():
     
 
 @app.route("/purchase", methods=["GET","POST"])
-def purchase():
-    form=MovementForm
+def Purchase():
+    form=MovementForm()
     if request.method == "GET":
         return render_template("purchase.html", the_form = form)
     else:
         if form.validate():
             try:
-                dao.insert(Registros(str(form.currency_in.data,form.quantity_in.data,
-                form.currency_out.data,form.quantity_out.data)))
+                dao.insert(Registros(str(form.currency_in.data),form.quantity_in.data,
+                form.currency_out.data,form.quantity_out.data))
             except ValueError as e:
                 flash(str(e))
                 return render_template("purchase.html", the_form = form)

@@ -84,7 +84,7 @@ class MovementDAOsqlite:
 
         query = """
         INSERT INTO movements
-               (date_hour,currency_from,quantity_from,currency_to,quantity_to,unit_price)
+               (id,date_hour,currency_from,quantity_from,currency_to,quantity_to,unit_price)
         VALUES ( ?, ?, ?, ?, ?, ?)
         """
 
