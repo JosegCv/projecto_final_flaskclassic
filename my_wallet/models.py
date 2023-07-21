@@ -1,6 +1,7 @@
 from datetime import * 
 import os
 import sqlite3
+import requests
 
 CURRENCIES =  ["EUR", "BTC",
     "ETH", "USDT",
@@ -9,14 +10,16 @@ CURRENCIES =  ["EUR", "BTC",
     "DOT", "MATIC"]
 
 class Registros:
-    def __init__(self, date_hour, currency_from, quantity_from, currency_to, quantity_to,unit_price,  id = None):
-        self.date_hour = date_hour
+    def __init__(self,date_hour, currency_from, quantity_from, currency_to, quantity_to,unit_price,  id = None):
+        
         self.id = id
+        self.date_hour = str(date_hour)
         self.unit_price = unit_price
         self.currency_from = currency_from
         self.quantity_from = quantity_from
         self.currency_to = currency_to
         self.quantity_to = quantity_to
+        self.unit_price = unit_price
 
     @property
     def date_hour(self):
@@ -26,7 +29,7 @@ class Registros:
     def date_hour(self, value):
         self._date = datetime.fromisoformat(value)
         if self._date > datetime.today():
-            raise ValueError("Date must be Today or a Date Before")
+            raise ValueError("Incorrect date")
         
     @property
     def quantity_from(self):
@@ -70,7 +73,7 @@ class MovementDAOsqlite:
 	    "quantity_from"	REAL NOT NULL,
 	    "currency_to"	TEXT NOT NULL,
 	    "quantity_to"	REAL NOT NULL,
-	    "unit_price"	REAL NOT NULL,
+	    "unit_price"	REAL ,
 	    PRIMARY KEY("id" AUTOINCREMENT)
         );
         """
@@ -84,7 +87,7 @@ class MovementDAOsqlite:
 
         query = """
         INSERT INTO movements
-               (id,date_hour,currency_from,quantity_from,currency_to,quantity_to,unit_price)
+               (date_hour,currency_from,quantity_from,currency_to,quantity_to,unit_price)
         VALUES ( ?, ?, ?, ?, ?, ?)
         """
 
@@ -142,3 +145,20 @@ class MovementDAOsqlite:
         # cur.execute(query, (movement.date, movement.abstract, movement.amount, movement.currency, id))
         # conn.commit()
         # conn.close()
+        
+
+def get_rate(currency_from, currency_to, SECRET_KEY):
+    url = f"https://rest.coinapi.io/v1/exchangerate/{currency_from}/{currency_to}?apikey={SECRET_KEY}"
+
+    try:
+        response = requests.get(url)
+        datos = response.json()
+
+        if response.status_code == 200:
+            return True, datos['rate']
+        else:
+            return False, None  # Indicar que la solicitud fallo y no devolver un tipo de cambio válido
+    except requests.exceptions.RequestException as e:
+        return False, None  # Manejar errores de solicitud (por ejemplo, problemas de conexión)
+    except KeyError:
+        return False, None

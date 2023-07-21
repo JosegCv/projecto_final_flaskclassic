@@ -10,3 +10,14 @@
 .grid-div.right-aligned {
     justify-self: end;
   }
+
+.grid-container {
+    display: grid;
+    grid-template-columns: 1fr 1fr 1fr; /* Divide en 3 columnas */
+    grid-template-rows: 100px 200px; /* Dos filas de altura */
+  }
+  
+.element {
+    grid-column: 2; /* El elemento ocupa la segunda columna */
+    grid-row: 1; /* El elemento ocupa la primera fila */
+  }
