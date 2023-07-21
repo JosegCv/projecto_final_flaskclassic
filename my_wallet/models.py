@@ -147,18 +147,3 @@ class MovementDAOsqlite:
         # conn.close()
         
 
-def get_rate(currency_from, currency_to, SECRET_KEY):
-    url = f"https://rest.coinapi.io/v1/exchangerate/{currency_from}/{currency_to}?apikey={SECRET_KEY}"
-
-    try:
-        response = requests.get(url)
-        datos = response.json()
-
-        if response.status_code == 200:
-            return True, datos['rate']
-        else:
-            return False, None  # Indicar que la solicitud fallo y no devolver un tipo de cambio válido
-    except requests.exceptions.RequestException as e:
-        return False, None  # Manejar errores de solicitud (por ejemplo, problemas de conexión)
-    except KeyError:
-        return False, None

@@ -1,23 +1,50 @@
 /* Estilo para la etiqueta <div> */
 .grid-div {
-    /* Disposición en grid */
-    display: grid;
-  
-    /* Tamaño específico */
-    width: 300px;
-    height: 200px;
-}
-.grid-div.right-aligned {
-    justify-self: end;
-  }
+  /* Disposición en grid */
+  display: grid;
 
+  /* Tamaño específico */
+  width: 300px;
+  height: 200px;
+
+  /* Espacio entre los elementos */
+  margin-bottom: 20px;
+}
+
+/* Estilo para la etiqueta <div> con alineación a la derecha */
+.grid-div.right-aligned {
+  justify-self: end;
+}
+
+/* Estilo para el contenedor grid */
 .grid-container {
-    display: grid;
-    grid-template-columns: 1fr 1fr 1fr; /* Divide en 3 columnas */
-    grid-template-rows: 100px 200px; /* Dos filas de altura */
-  }
-  
-.element {
-    grid-column: 2; /* El elemento ocupa la segunda columna */
-    grid-row: 1; /* El elemento ocupa la primera fila */
-  }
+  display: grid;
+  grid-template-columns: 1fr 1fr; /* Divide en 2 columnas */
+}
+
+/* Estilo para los campos de entrada */
+input[type="text"],
+select {
+  /* Ajustar el tamaño del campo de entrada */
+  width: 100%;
+
+  /* Espacio entre los campos de entrada */
+  margin-top: 5px;
+  margin-bottom: 10px;
+}
+
+/* Estilo para los botones */
+input[type="submit"] {
+  /* Estilo del botón */
+  padding: 10px;
+  border: none;
+  color: white;
+  background-color: #007BFF;
+  cursor: pointer;
+}
+
+/* Estilo específico para el botón de comprar */
+input[name="comprar"] {
+  /* Cambiar el color de fondo para el botón de comprar */
+  background-color: #28A745;
+}
