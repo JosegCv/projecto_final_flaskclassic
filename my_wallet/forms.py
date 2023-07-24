@@ -1,5 +1,5 @@
 from flask_wtf import FlaskForm
-from wtforms import DateField, StringField, FloatField, SelectField, SubmitField, HiddenField
+from wtforms import DateField, StringField, FloatField, SelectField, SubmitField, HiddenField, DecimalField
 from wtforms.validators import DataRequired, Length, ValidationError
 from datetime import datetime,date
 
@@ -22,6 +22,6 @@ class MovementForm(FlaskForm):
                                                                                                     ('XRP', 'XRP'), ('SOL', 'SOL'), ('USDT', 'USDT'),
                                                                                                     ('MATIC', 'MATIC')])
     
-    quantity_out = HiddenField()
+    #quantity_out = HiddenField()
     calculate = SubmitField("Calcular")
     comprar = SubmitField("Comprar")

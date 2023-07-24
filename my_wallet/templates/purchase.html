@@ -1,52 +1,54 @@
 {% extends "base.html" %}
 {% block content %}
     <h1>cripto currency value and Purchase info</h1>
-    <form action="/purchase" method="post">
+    <form action="/purchase" method="POST">
         {{ the_form.csrf_token }}
-        <div class="grid-div">
-            {{ the_form.currency_in.label }}
-            {{ the_form.currency_in }}
-            {% if the_form.currency_in.errors %}
-                {% for mensaje in the_form.currency_in.errors %}
-                    <p class="error">{{ mensaje }}</p>
-                {% endfor %}
-            {% endif %}
+ 
+        <div class="row">
+            <div class="grid-div">
+                {{ the_form.currency_in.label }}
+                {{ the_form.currency_in }}
+                {% if the_form.currency_in.errors %}
+                    {% for mensaje in the_form.currency_in.errors %}
+                        <p class="error">{{ mensaje }}</p>
+                    {% endfor %}
+                {% endif %}
+            </div>
+            <div class="grid-div">
+                {{ the_form.quantity_in.label }}
+                {{ the_form.quantity_in }}
+                {% if the_form.quantity_in.errors %}
+                    {% for mensaje in the_form.quantity_in.errors %}
+                        <p class="error">{{ mensaje }}</p>
+                    {% endfor %}
+                {% endif %}
+            </div>
         </div>
-        <div class="grid-div">
-            {{ the_form.quantity_in.label }}
-            {{ the_form.quantity_in }}
-            {% if the_form.quantity_in.errors %}
-                {% for mensaje in the_form.quantity_in.errors %}
-                    <p class="error">{{ mensaje }}</p>
-                {% endfor %}
-            {% endif %}
+    
+        <div class="row">
+            <div class="grid-div">
+                {{ the_form.currency_out.label}}
+                {{ the_form.currency_out }}
+                {% if the_form.currency_out.errors %}
+                    {% for mensaje in the_form.currency_out.errors %}
+                        <p class="error">{{ mensaje }}</p>
+                    {% endfor %}
+                {% endif %}
+            </div>
+            <div class="grid-container">
+
+                {{ quantity }} {{ the_form.currency_out.data }}
+
+            </div>
         </div>
-        <div class="grid">
-            {{ the_form.currency_out.label}}
-            {{ the_form.currency_out }}
-            {% if the_form.currency_out.errors %}
-                {% for mensaje in the_form.currency_out.errors %}
-                    <p class="error">{{ mensaje }}</p>
-                {% endfor %}
-            {% endif %}
-        </div>
-         <div class="grid">
-            {{ the_form.quantity_out.label}}
-            {{ the_form.quantity_out }}
-            {% if the_form.quantity_out.errors %}
-                {% for mensaje in the_form.quantity_out.errors %}
-                    <p class="error">{{ mensaje }}</p>
-                {% endfor %}
-            {% endif %}
-        </div>
-        <div class="grid">
-         {{ the_form.calculate }}
-        </div>
-        
-        <div class="grid">
-            {{ the_form.comprar }}
+    
+        <div class="row">
+            <div class="grid">
+                {{ the_form.calculate }}
+            </div>
+            <div class="grid">
+                {{ the_form.comprar }}
+            </div>
         </div>
     </form>
-
-
-{% endblock %}
+    {% endblock %}

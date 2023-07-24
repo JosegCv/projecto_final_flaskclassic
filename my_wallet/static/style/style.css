@@ -11,15 +11,13 @@
   margin-bottom: 20px;
 }
 
-/* Estilo para la etiqueta <div> con alineación a la derecha */
-.grid-div.right-aligned {
-  justify-self: end;
-}
+
+
 
 /* Estilo para el contenedor grid */
 .grid-container {
   display: grid;
-  grid-template-columns: 1fr 1fr; /* Divide en 2 columnas */
+  grid-template-columns: 10fr 10fr; /* Divide en 2 columnas */
 }
 
 /* Estilo para los campos de entrada */
@@ -29,14 +27,14 @@ select {
   width: 100%;
 
   /* Espacio entre los campos de entrada */
-  margin-top: 5px;
-  margin-bottom: 10px;
+  margin-top: 35px;
+  margin-bottom: 35px;
 }
 
 /* Estilo para los botones */
 input[type="submit"] {
   /* Estilo del botón */
-  padding: 10px;
+  padding: 15px;
   border: none;
   color: white;
   background-color: #007BFF;
@@ -46,5 +44,15 @@ input[type="submit"] {
 /* Estilo específico para el botón de comprar */
 input[name="comprar"] {
   /* Cambiar el color de fondo para el botón de comprar */
-  background-color: #28A745;
+  background-color: #09a72e;
+}
+
+.row {
+  display: flex; /* Usa flexbox para crear una fila */
+  justify-content: space-between; /* Ajusta el espaciado entre las columnas */
+}
+
+.column {
+  flex: 1; /* Permite que cada columna crezca por igual */
+  padding: 10px; /* Agrega relleno para el espaciado */
 }
