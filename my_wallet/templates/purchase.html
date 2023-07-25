@@ -45,6 +45,11 @@
         <div class="row">
             <div class="grid">
                 {{ the_form.calculate }}
+                {% if the_form.calculate.errors %}
+                    {% for mensaje in the_form.calculate.errors %}
+                        <p class="error">{{ mensaje }}</p>
+                    {% endfor %}
+                {% endif %}
             </div>
             <div class="grid">
                 {{ the_form.comprar }}

@@ -36,6 +36,8 @@ def Purchase():
                 # Realizar la llamada a la API
                 currency_from = form.currency_in.data
                 currency_to = form.currency_out.data
+                
+                
                 url = f'https://rest.coinapi.io/v1/exchangerate/{currency_from}/{currency_to}?apikey={app.config.get("API_KEY")}'
                 response = requests.get(url)
                 if response.status_code == 200:
@@ -48,28 +50,29 @@ def Purchase():
                     # Calcular la cantidad de moneda de destino
                     quantity_in = float(form.quantity_in.data)
                     quantity_out = (quantity_in) * float(rate)
+                    
                     #form.quantity_out.data = "{:.6f}".format(quantity_out)  # Formatear a 6 decimales
 
                     return render_template("purchase.html", the_form=form, date_now=fecha, p_u=precio_u, quantity=quantity_out)
 
                 else:
-                    flash(f'Error al obtener la tasa de cambio: {response.status_code}')
+                    flash(f"Error al obtener la tasa de cambio: {response.status_code}")
                     return render_template("purchase.html", the_form=form, date_now=fecha, p_u=precio_u)
 
-            elif 'comprar' in request.form:  # Boton "Comprar" presionado
+            elif "comprar" in request.form:  # Boton "Comprar" presionado
                 # Obtener los datos del formulario
                 fecha = datetime.datetime.now()
                 currency_from = form.currency_in.data
                 currency_to = form.currency_out.data
                 quantity_in = float(form.quantity_in.data)
-                precio_u = float(session.get('precio_u', 0.0))
+                precio_u = float(session.get("precio_u", 0.0))
                 quantity_out = precio_u * quantity_in
 
                 # Insertar los datos en la base 
                 dao.insert(Registros(fecha, currency_from, quantity_in, currency_to, quantity_out, precio_u))
 
                 # Limpiar la variable de sesión después de la compra
-                session.pop('precio_u', None)
+                session.pop("precio_u", None)
 
                 return redirect("/")
 
@@ -77,6 +80,9 @@ def Purchase():
             flash(f'Error de conexión: {e}')
             return render_template("purchase.html", the_form=form, date_now=fecha, p_u=precio_u)
 
+    else:
+        return render_template("purchase.html", the_form=form, date_now=fecha, p_u=precio_u)
+    
 @app.route("/status", methods=["GET"])
 def status():
     return render_template("status.html")
