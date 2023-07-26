@@ -2,7 +2,7 @@ import requests
 from my_wallet import app
 from my_wallet.forms import MovementForm
 from flask import render_template, request, redirect, flash, session
-from my_wallet.models import MovementDAOsqlite, CURRENCIES, Registros
+from my_wallet.models import MovementDAOsqlite, CURRENCIES, Registros, consulta
 import sqlite3
 import datetime
 dao = MovementDAOsqlite(app.config.get("PATH_SQLITE"))
@@ -22,7 +22,7 @@ def index():
 @app.route("/purchase", methods=["GET","POST"])
 def Purchase():
     #rate = ""
-    fecha = datetime.datetime.now()
+    fecha = datetime.datetime.now().strftime("%H:%M")
     precio_u = session.get('precio_u', 0.0)
     
 
@@ -97,15 +97,20 @@ def Purchase():
         except requests.exceptions.RequestException as e:
                 flash(f'Error de conexión: {e}')
                 return render_template("purchase.html", the_form=form, date_now=fecha, p_u=precio_u)
-
+    else:
+        flash(f'Use a Valid positive Number')
+        return render_template("purchase.html", the_form=form, date_now=fecha, p_u=precio_u)
     
 @app.route("/status", methods=["GET"])
 def status():
     try:
-        the_stats = dao.get_all()
-        return render_template("index.html", stats= the_stats, title="Status")
+        the_stats = consulta()
+        #print("hola aqui toy")
+        return render_template("status.html", stats= the_stats, title="Status")
+        
     except ValueError as e:
         flash("Su fichero de datos está corrupto")
         flash(str(e))
         return render_template("status.html", stats=[], title="Status")
+    
 

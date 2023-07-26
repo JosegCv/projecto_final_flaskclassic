@@ -129,21 +129,27 @@ class MovementDAOsqlite:
 
         conn.close()
         return lista
-# dejare el update solo por si se me ocurre alguna idea
-    #def update(self, id, movement):
-        #pass
-        
-        
-        # query = """ 
-        # UPDATE movements
-        #    SET date_hour = ?,  currency_from= ?, quantity_from = ?, currency_to = ?, quantity_to = ?
-        #  WHERE id = ?;
-        # """
 
-        # conn = sqlite3.connect(self.path)
-        # cur = conn.cursor()
-        # cur.execute(query, (movement.date, movement.abstract, movement.amount, movement.currency, id))
-        # conn.commit()
-        # conn.close()
-        
+def consulta():
+    query = """
+        SELECT currency_to From movements
+        """
+    
+    conn=sqlite3.connect("data/movements")
+
+    cur= conn.cursor()
+
+    cur.execute(query)
+
+    data=cur.fetchall()
+
+    conn.commit()
+
+    conn.close()
+    return data
+
+    
+
+
+
 
