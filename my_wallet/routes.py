@@ -19,7 +19,6 @@ def index():
         flash(str(e))
         return render_template("index.html", movs=[], title="Inicio")
     
-
 @app.route("/purchase", methods=["GET","POST"])
 def Purchase():
     #rate = ""
@@ -36,21 +35,24 @@ def Purchase():
                 # Realizar la llamada a la API
                 currency_from = form.currency_in.data
                 currency_to = form.currency_out.data
-                
-                
+                if currency_from == currency_to:
+                    flash("Error: Both Currencies Cant Be The Same.")
+                    return render_template("purchase.html", the_form=form, date_now=fecha, p_u=precio_u)
+
                 url = f'https://rest.coinapi.io/v1/exchangerate/{currency_from}/{currency_to}?apikey={app.config.get("API_KEY")}'
                 response = requests.get(url)
+
                 if response.status_code == 200:
                     data = response.json()
                     rate = data.get('rate')
 
                     # Actualizar la variable de sesión
-                    session['precio_u'] = (float(rate))
+                    session['precio_u'] = float(rate)
 
                     # Calcular la cantidad de moneda de destino
                     quantity_in = float(form.quantity_in.data)
-                    quantity_out = (quantity_in) * float(rate)
-                    
+                    quantity_out = quantity_in * float(rate)
+
                     #form.quantity_out.data = "{:.6f}".format(quantity_out)  # Formatear a 6 decimales
 
                     return render_template("purchase.html", the_form=form, date_now=fecha, p_u=precio_u, quantity=quantity_out)
@@ -58,6 +60,8 @@ def Purchase():
                 else:
                     flash(f"Error al obtener la tasa de cambio: {response.status_code}")
                     return render_template("purchase.html", the_form=form, date_now=fecha, p_u=precio_u)
+            
+
 
             elif "comprar" in request.form:  # Boton "Comprar" presionado
                 # Obtener los datos del formulario
@@ -75,13 +79,15 @@ def Purchase():
                 session.pop("precio_u", None)
 
                 return redirect("/")
+            else:
+
+                return render_template("purchase.html", the_form=form, date_now=fecha, p_u=precio_u)
+
 
         except requests.exceptions.RequestException as e:
-            flash(f'Error de conexión: {e}')
-            return render_template("purchase.html", the_form=form, date_now=fecha, p_u=precio_u)
+                flash(f'Error de conexión: {e}')
+                return render_template("purchase.html", the_form=form, date_now=fecha, p_u=precio_u)
 
-    else:
-        return render_template("purchase.html", the_form=form, date_now=fecha, p_u=precio_u)
     
 @app.route("/status", methods=["GET"])
 def status():
