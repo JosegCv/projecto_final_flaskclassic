@@ -24,6 +24,7 @@ def Purchase():
     #rate = ""
     fecha = datetime.datetime.now()
     precio_u = session.get('precio_u', 0.0)
+    
 
     form = MovementForm()
 
@@ -53,7 +54,8 @@ def Purchase():
                     quantity_in = float(form.quantity_in.data)
                     quantity_out = quantity_in * float(rate)
 
-                    #form.quantity_out.data = "{:.6f}".format(quantity_out)  # Formatear a 6 decimales
+                    session['currency_from'] = currency_from
+                    session['currency_to'] = currency_to
 
                     return render_template("purchase.html", the_form=form, date_now=fecha, p_u=precio_u, quantity=quantity_out)
 
@@ -71,14 +73,22 @@ def Purchase():
                 quantity_in = float(form.quantity_in.data)
                 precio_u = float(session.get("precio_u", 0.0))
                 quantity_out = precio_u * quantity_in
+                alm_currency_from = session.get('currency_from')
+                alm_currency_to = session.get('currency_to')
 
-                # Insertar los datos en la base 
-                dao.insert(Registros(fecha, currency_from, quantity_in, currency_to, quantity_out, precio_u))
+                # Verificar si se modificaron Datos
+                if currency_from != alm_currency_from or currency_to != alm_currency_to:
+                    
+                    flash(f'no puedes cambiar monedas')
+                    return render_template("purchase.html", the_form=form, date_now=fecha, p_u=precio_u)
+                else:
+                    # Insertar los datos en la base 
+                    dao.insert(Registros(fecha, currency_from, quantity_in, currency_to, quantity_out, precio_u))
 
-                # Limpiar la variable de sesión después de la compra
-                session.pop("precio_u", None)
+                # Limpiar la variable de sesión despues de la compra
+                    session.pop("precio_u", None)
 
-                return redirect("/")
+                    return redirect("/")
             else:
 
                 return render_template("purchase.html", the_form=form, date_now=fecha, p_u=precio_u)
@@ -91,5 +101,11 @@ def Purchase():
     
 @app.route("/status", methods=["GET"])
 def status():
-    return render_template("status.html")
+    try:
+        the_stats = dao.get_all()
+        return render_template("index.html", stats= the_stats, title="Status")
+    except ValueError as e:
+        flash("Su fichero de datos está corrupto")
+        flash(str(e))
+        return render_template("status.html", stats=[], title="Status")
 
