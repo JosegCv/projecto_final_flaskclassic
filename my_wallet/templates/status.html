@@ -1,15 +1,24 @@
 {% extends "base.html" %}
 {% block content%}
 
-        <h1>Summary Status</h1>
-        
-        <table>
-            <tr>
-                <div class="grid-container">
-                <th>Currency</th>
-                <th>Quantity</th>
-                <th>Amount Invested</th>
-                </div>
-            </tr>
-        </table>
+<h1>Summary Status</h1>
+
+<table>
+    <tr>
+        <th>Currency</th>
+        <th>Quantity</th>
+        <th>Amount Invested</th>
+        <th> Euro Valor </th>
+
+    </tr>
+    {% for currency, data in stats.items() %}
+    <tr>
+        <td>{{ currency }}</td>
+        <td>{{ data.quantity_to }}</td>
+        <td>{{ data.quantity_from }}</td>
+
+    </tr>
+    {% endfor %}
+</table>
+
 {% endblock %}

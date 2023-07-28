@@ -33,34 +33,60 @@ class Registros:
         
     @property
     def quantity_from(self):
-        return self._quantity_to
-    
+        return self._quantity_from
+
     @quantity_from.setter
     def quantity_from(self, value):
-        self._quantity_to = float(value)
-        if self._quantity_to <= 0:
-            raise ValueError(" must be positive amount")
-        
+        if value is None:
+            value = 0.0
+        self._quantity_from = float(value)
+        if self._quantity_from < 0:
+            raise ValueError(" must be non-negative amount")
+
     @property
     def currency_from(self):
         return self._currency_from
-    
+
     @currency_from.setter
     def currency_from(self, value):
+        if value is None:
+            value = ""
         self._currency_from = value
         if self._currency_from not in CURRENCIES:
             raise ValueError(f"currency must be in {CURRENCIES}")
+
+    @property
+    def currency_to(self):
+        return self._currency_to
+
+    @currency_to.setter
+    def currency_to(self, value):
+        if value is None:
+            value = ""
+        self._currency_to = value
+        if self._currency_to not in CURRENCIES:
+            raise ValueError(f"currency must be in {CURRENCIES}")
+
+    @property
+    def quantity_to(self):
+        return self._quantity_to
+
+    @quantity_to.setter
+    def quantity_to(self, value):
+        if value is None:
+            value = 0.0
+        self._quantity_to = float(value)
+        if self._quantity_to < 0:
+            raise ValueError(" must be non-negative amount")
     
-    @currency_from.setter
-    def currency(self, value):
-      pass
+
 
     def __eq__(self, other):
         return self.date_hour == other.date_hour and self.currency_from == other.currency_from and self.quantity_from == other.quantity_from and self.currency_to == other.currency_to and self.quantity_to == other.quantity_to
         #return (self.date_hour, self.currency_from, self.quantity_from, self.currency_to, self.quantity_to) == (other.date_hour, other.currency_from, other.quantity_from, other.currency_to, other.quantity_to)
     def __repr__(self):
         return f"Movimiento: {self.date_hour} - {self.currency_from} - {self.quantity_from} - {self.currency_to} - {self.quantity_to}"
-    
+
 class MovementDAOsqlite:
     def __init__(self, db_path):
         self.path = db_path
@@ -128,28 +154,43 @@ class MovementDAOsqlite:
         lista = [Registros(*reg) for reg in res]
 
         conn.close()
+
         return lista
 
+    
+    def update_quantity_to(self, currency_to, nueva_cantidad):
+        query = f"""
+                UPDATE movements SET quantity_to = {nueva_cantidad} WHERE currency_to = '{currency_to}'
+            """
+        conn = sqlite3.connect(self.path)
+        cur = conn.cursor()
+        cur.execute(query)
+        conn.commit()
+        conn.close()
+        
 def consulta():
     query = """
-        SELECT currency_to From movements
-        """
+        SELECT currency_from, currency_to, quantity_from, quantity_to FROM movements
+    """
     
-    conn=sqlite3.connect("data/movements")
-
-    cur= conn.cursor()
-
+    conn = sqlite3.connect("data/movements")  
+    cur = conn.cursor()
     cur.execute(query)
-
-    data=cur.fetchall()
-
-    conn.commit()
-
+    data = cur.fetchall()
     conn.close()
-    return data
 
-    
+    # Diccionario para realizar el seguimiento de las sumas de quantity_from y quantity_to por currency
+    sums_by_currency = {}
+
+    for currency_from, currency_to, quantity_from, quantity_to in data:
+
+        if currency_from not in sums_by_currency:
+            sums_by_currency[currency_from] = {"quantity_from": 0.0, "quantity_to": 0.0}
+        if currency_to not in sums_by_currency:
+            sums_by_currency[currency_to] = {"quantity_from": 0.0, "quantity_to": 0.0}
 
 
+        sums_by_currency[currency_from]["quantity_from"] += quantity_from
+        sums_by_currency[currency_to]["quantity_to"] += quantity_to
 
-
+    return sums_by_currency

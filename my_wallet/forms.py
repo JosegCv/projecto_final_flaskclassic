@@ -5,7 +5,7 @@ from datetime import datetime,date
 
 def is_positive(form, field):
     if field.data <= 0:
-        raise ValidationError("porfavro introduzca una cantidad validad positiva")
+        raise ValidationError("Please Use A Valid Positive Number")
     
 class MovementForm(FlaskForm):
     currency_in = SelectField("Moneda", validators=[DataRequired("currency obligatorios")], choices=[('EUR', 'EUR'), ('BTC', 'BTC'), ('ETH', 'ETH'),
