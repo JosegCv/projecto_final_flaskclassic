@@ -70,12 +70,15 @@ def Purchase():
                 quantity_out = precio_u * quantity_in
                 alm_currency_from = session.get('currency_from')
                 alm_currency_to = session.get('currency_to')
+                session['quantity_in'] = quantity_in
+                
+                alm_quantity_in = session.get('quantity_in')
+                
 
                 # Verificar si se modificaron Datos
-                if currency_from != alm_currency_from or currency_to != alm_currency_to:
-                    flash(f'No puedes cambiar monedas')
+                if currency_from != alm_currency_from or currency_to != alm_currency_to or quantity_in != alm_quantity_in:
+                    flash(f'Cannot change Values Before Purchase')
                     return render_template("purchase.html", the_form=form, date_now=fecha, p_u=precio_u)
-                
                 else:
                     # Validar que la cantidad de monedas a comprar sea positiva
                     if quantity_out <= 0:
@@ -88,12 +91,15 @@ def Purchase():
                     if currency_from != "EUR":
 
                         cantidad_actual = consulta().get(currency_from, {}).get("quantity_to", 0.0)
-                        if cantidad_actual < quantity_out:
+                        cantidad_compra = consulta().get(currency_from, {}).get("quantity_from", 0.0)
+                        se_puede = cantidad_actual - cantidad_compra
+
+                        if se_puede <= quantity_in:
                             flash(f'No tienes suficientes monedas para realizar esta compra')
                             return render_template("purchase.html", the_form=form, date_now=fecha, p_u=precio_u,act=cantidad_actual)
-                
+                    
                     # Insertar los datos en la base
-                    dao.insert(Registros(fecha, currency_from, quantity_in, currency_to, quantity_out, precio_u))
+                dao.insert(Registros(fecha, currency_from, quantity_in, currency_to, quantity_out, precio_u))
 
 
                     # Limpiar la variable de sesión después de la compra
@@ -125,6 +131,8 @@ def status():
          # Realizar cálculos adicionales con los datos del diccionario the_stats
         for currency, data in the_stats.items():
             quantity_to = data["quantity_to"]
+            quantity_from = data["quantity_from"]
+            valor_actual = quantity_to - quantity_from
 
             # Llamada a la API para obtener el valor en EUR de cada currency
             quota = currency

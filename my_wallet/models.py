@@ -156,17 +156,6 @@ class MovementDAOsqlite:
         conn.close()
 
         return lista
-
-    
-    def update_quantity_to(self, currency_to, nueva_cantidad):
-        query = f"""
-                UPDATE movements SET quantity_to = {nueva_cantidad} WHERE currency_to = '{currency_to}'
-            """
-        conn = sqlite3.connect(self.path)
-        cur = conn.cursor()
-        cur.execute(query)
-        conn.commit()
-        conn.close()
         
 def consulta():
     query = """
@@ -192,5 +181,7 @@ def consulta():
 
         sums_by_currency[currency_from]["quantity_from"] += quantity_from
         sums_by_currency[currency_to]["quantity_to"] += quantity_to
+        
 
     return sums_by_currency
+
