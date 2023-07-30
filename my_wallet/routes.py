@@ -102,10 +102,10 @@ def Purchase():
                 dao.insert(Registros(fecha, currency_from, quantity_in, currency_to, quantity_out, precio_u))
 
 
-                    # Limpiar la variable de sesión después de la compra
+                '''    # Limpiar la variable de sesión después de la compra
                 session.pop("precio_u", None)
                 session.pop("currency_from", None)
-                session.pop("currency_to", None)
+                session.pop("currency_to", None)'''
 
 
                 return redirect("/")
@@ -126,7 +126,11 @@ def Purchase():
 def status():
     try:
         base = "EUR"
-        the_stats = consulta()  # consulta a la BD
+        the_stats = consulta() # consulta a la BD
+        
+       # if "EUR" in the_stats and "quantity_to" in the_stats["EUR"] and "quantity_from" in the_stats["EUR"]:
+            #total_inversion_euro = the_stats["EUR"]["quantity_to"] - the_stats["EUR"]["quantity_from"]
+            
 
         processed_stats = {}  # Recolectar los datos procesados en un diccionario
 
@@ -152,7 +156,7 @@ def status():
                 
 
                 if exchange_rate is not None:
-                    cantidad_multiplicada = cantidad_final * exchange_rate
+                    cantidad_multiplicada = cantidad_final /exchange_rate
 
                     processed_data = {
                         "currency": currency,
@@ -161,8 +165,15 @@ def status():
                         "cantidad_multiplicada": cantidad_multiplicada
                     }
                     processed_stats[currency] = processed_data
+                
+                total_inversion = 0.0
+            for currency_data in processed_stats.values():
+                total_inversion += currency_data["cantidad_multiplicada"]
 
-        return render_template("status.html", stats=processed_stats, original_stats=the_stats, title="Status")
+            if "EUR" in the_stats and "quantity_to" in the_stats["EUR"] and "quantity_from" in the_stats["EUR"]:
+                total_inversion_euro =   total_inversion - the_stats["EUR"]["quantity_from"]
+
+        return render_template("status.html", stats=processed_stats, original_stats=the_stats, title="Status", total_inversion=total_inversion, total_inversion_euro=total_inversion_euro)
 
     except ValueError as e:
         flash("Su fichero de datos está corrupto")
