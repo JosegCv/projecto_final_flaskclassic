@@ -156,6 +156,8 @@ class MovementDAOsqlite:
         conn.close()
 
         return lista
+
+
         
 def consulta():
     query = """

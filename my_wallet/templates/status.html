@@ -1,29 +1,30 @@
 {% extends "base.html" %}
 
 {% block content %}
-<h1>Summary Status</h1>
-<table>
-    <tr>
-        <th>Currency</th>
-        <th>Quantity</th>
-        <th>Amount Invested</th>
-        <th>Euro Valor</th>
-    </tr>
-    {% for currency, data in stats.items() %}
-        {% if currency != "EUR" %}
-            <tr>
-                <td>{{ currency }}</td>
-                <td>{{ data.quantity_to }}</td>
-                <td>{{ data.quantity_from }}</td>
-                <td>
-                    {% if currency in rates %}
-                        {{ rates[currency] }}
-                    {% else %}
-                        N/A
-                    {% endif %}
-                </td>
-            </tr>
-        {% endif %}
-    {% endfor %}
-</table>
+    <h1>Estado Resumen</h1>
+    <table>
+        <tr>
+            <th>Moneda</th>
+            <th>Cantidad Actual</th>
+            <th>Valor en Euros</th>
+        </tr>
+        {% for currency, data in original_stats.items() %}
+            {% if currency != "EUR" %}
+                <tr>
+                    <td>{{ currency }}</td>
+                    
+                    <td>{{ data.quantity_to - data.quantity_from }}</td>
+
+                    
+                    <td>
+                        {% if currency in stats %}
+                            {{ stats[currency].cantidad_multiplicada }}
+                        {% else %}
+                            N/A
+                        {% endif %}
+                    </td>
+                </tr>
+            {% endif %}
+        {% endfor %}
+    </table>
 {% endblock %}

@@ -124,29 +124,48 @@ def Purchase():
 
 @app.route("/status", methods=["GET"])
 def status():
-    fecha = datetime.datetime.now().strftime("%H:%M")
     try:
+        base = "EUR"
         the_stats = consulta()  # consulta a la BD
-        
-         # Realizar cálculos adicionales con los datos del diccionario the_stats
-        for currency, data in the_stats.items():
-            quantity_to = data["quantity_to"]
-            quantity_from = data["quantity_from"]
-            valor_actual = quantity_to - quantity_from
 
-            # Llamada a la API para obtener el valor en EUR de cada currency
-            quota = currency
-            url = f'https://rest.coinapi.io/v1/exchangerate/{"EUR"}/{quota}?time={fecha}&apikey={app.config.get("API_KEY")}'
-            response = requests.get(url)
+        processed_stats = {}  # Recolectar los datos procesados en un diccionario
 
-            if response.status_code == 200:
-                data = response.json()
-                rate = data.get('rate')  # Obtener la tasa de cambio respecto a EUR
+        # Obtener los tipos de cambio respecto al Euro (EUR) desde la API
+        url = f'https://rest.coinapi.io/v1/exchangerate/{base}?apikey={app.config.get("API_KEY")}'
+        response = requests.get(url)
 
-        return render_template("status.html", stats=the_stats, title="Status")
+        if response.status_code == 200:
+            rates_eur = response.json()
+
+            # Realizar cálculos  con los datos del diccionario the_stats
+            for currency, data in the_stats.items():
+                exchange_rate = None
+                for rate_info in rates_eur["rates"]:
+                    if rate_info["asset_id_quote"] == currency:  # Aquí se usa "asset_id_quote" para comparar el currency 
+                        exchange_rate = rate_info["rate"]
+                        break
+                quantity_to = data["quantity_to"]
+                quantity_from = data["quantity_from"]
+                cantidad_final = quantity_to - quantity_from
+                #print("Rates:", rates_eur)
+                
+                
+
+                if exchange_rate is not None:
+                    cantidad_multiplicada = cantidad_final * exchange_rate
+
+                    processed_data = {
+                        "currency": currency,
+                        "valor_actual": cantidad_final,
+                        "exchange_rate": exchange_rate,
+                        "cantidad_multiplicada": cantidad_multiplicada
+                    }
+                    processed_stats[currency] = processed_data
+
+        return render_template("status.html", stats=processed_stats, original_stats=the_stats, title="Status")
 
     except ValueError as e:
         flash("Su fichero de datos está corrupto")
         flash(str(e))
-        return render_template("status.html", stats=[], title="Status")
+        return render_template("status.html", stats={}, title="Status")
     
