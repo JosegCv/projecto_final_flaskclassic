@@ -4,7 +4,7 @@ My Wallet Lite es una sencilla aplicación web construida con Flask que permite 
 
 ## Características
 
-- Agregar, actualizar y eliminar transacciones de criptomonedas.
+- Agregar, actualizar transacciones de criptomonedas.
 - Ver el valor actual de cada criptomoneda en Euros basado en los tipos de cambio en tiempo real.
 - Calcular la inversión total y el valor de la cartera en Euros.
 - Almacenar las transacciones de criptomonedas en una base de datos SQLite para persistencia de datos.
