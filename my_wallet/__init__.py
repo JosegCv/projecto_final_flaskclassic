@@ -11,6 +11,8 @@ app.config["SECRET_KEY"] = os.getenv("SECRET_KEY")
 
 app.config.from_prefixed_env()
 
+app.config['PERMANENT_SESSION_LIFETIME'] = 15
+
 
 
 

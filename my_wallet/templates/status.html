@@ -13,12 +13,9 @@
                 {% if currency != "EUR" and data.quantity_to is not none and data.quantity_from is not none %}
                     <tr>
                         <td>{{ currency }}</td>
-                        
                         <td>{{ data.quantity_to - data.quantity_from }}</td>
-
-                        
                         <td>
-                            {% if stats[currency].cantidad_multiplicada is not none %}
+                            {% if currency in stats and stats[currency].cantidad_multiplicada is not none %}
                                 {{ stats[currency].cantidad_multiplicada }}
                             {% endif %}
                         </td>
@@ -32,7 +29,7 @@
     
     {% for currency, data in original_stats.items() %}
         {% if currency == "EUR" and data.quantity_from is not none %}
-            <h6>Total de inversion en Euros: {{ data.quantity_from }}</h6>
+            <h6>Total de inversión en Euros: {{ data.quantity_from }}</h6>
         {% endif %}
     {% endfor %}
     
@@ -41,6 +38,6 @@
     {% endif %}
     
     {% if total_inversion_euro is not none %}
-        <h6>Resultado De La Inversion: {{ total_inversion_euro }}</h6>
+        <h6>Resultado De La Inversión: {{ total_inversion_euro }}</h6>
     {% endif %}
 {% endblock %}

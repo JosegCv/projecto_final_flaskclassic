@@ -119,72 +119,67 @@ def Purchase():
         flash(f'Use a Valid positive Number')
         return render_template("purchase.html", the_form=form, date_now=fecha, p_u=precio_u)
 
+
 @app.route("/status", methods=["GET"])
 def status():
     try:
         base = "EUR"
-        # Verificar si ya hay datos de cálculos en la sesión
-        if 'processed_stats' in session:
-            processed_stats = session['processed_stats']
-            the_stats = session['the_stats']
-            total_inversion = session['total_inversion']
-            total_inversion_euro = session['total_inversion_euro']
-        else:
-            the_stats = consulta()  # consulta a la BD
+        the_stats = consulta()  # consulta a la BD
+        total_inversion = 0.0  
+        total_inversion_euro = 0.0
+        processed_stats = {}  # Recolectar los datos procesados en un diccionario
+
+        # Obtener los tipos de cambio respecto al Euro (EUR) desde la API
+        url = f'https://rest.coinapi.io/v1/exchangerate/{base}?apikey={app.config.get("API_KEY")}'
+        response = requests.get(url)
+
+
+        if response.status_code == 200:
+            rates_eur = response.json()
+
+            # Realizar cálculos con los datos del diccionario the_stats
+            for currency, data in the_stats.items():
+                exchange_rate = None
+                for rate_info in rates_eur["rates"]:
+                    if rate_info["asset_id_quote"] == currency:
+                        exchange_rate = rate_info["rate"]
+                        break
+                quantity_to = data["quantity_to"]
+                quantity_from = data["quantity_from"]
+                cantidad_final = quantity_to - quantity_from
+
+                if exchange_rate is not None:
+                    cantidad_multiplicada = cantidad_final / exchange_rate
+
+                    processed_data = {
+                        "currency": currency,
+                        "valor_actual": cantidad_final,
+                        "exchange_rate": exchange_rate,
+                        "cantidad_multiplicada": cantidad_multiplicada
+                    }
+                    processed_stats[currency] = processed_data
+
             total_inversion = 0.0
-            euro_from = the_stats["EUR"]["quantity_from"]
-            euro_to = the_stats["EUR"]["quantity_to"]
-            total_inversion_euro = 0.0 
+            for currency_data in processed_stats.values():
+                total_inversion += currency_data["cantidad_multiplicada"]
 
-            processed_stats = {}  # Recolectar los datos procesados en un diccionario
+            if "EUR" in the_stats and "quantity_to" in the_stats["EUR"] and "quantity_from" in the_stats["EUR"]:
+                total_inversion_euro = total_inversion - the_stats["EUR"]["quantity_from"]
+            else:
+                total_inversion_euro = 0.0
 
-            # Obtener los tipos de cambio respecto al Euro (EUR) desde la API
-            url = f'https://rest.coinapi.io/v1/exchangerate/{base}?apikey={app.config.get("API_KEY")}'
-            response = requests.get(url)
-
-            if response.status_code == 200:
-                rates_eur = response.json()
-
-                # Realizar cálculos con los datos del diccionario the_stats
-                for currency, data in the_stats.items():
-                    exchange_rate = None
-                    for rate_info in rates_eur["rates"]:
-                        if rate_info["asset_id_quote"] == currency:
-                            exchange_rate = rate_info["rate"]
-                            break
-                    quantity_to = data["quantity_to"]
-                    quantity_from = data["quantity_from"]
-                    cantidad_final = quantity_to - quantity_from
-
-                    if exchange_rate is not None:
-                        cantidad_multiplicada = cantidad_final / exchange_rate
-
-                        processed_data = {
-                            "currency": currency,
-                            "valor_actual": cantidad_final,
-                            "exchange_rate": exchange_rate,
-                            "cantidad_multiplicada": cantidad_multiplicada
-                        }
-                        processed_stats[currency] = processed_data
-                
-                for currency_data in processed_stats.values():
-                    total_inversion += currency_data["cantidad_multiplicada"]
-
-                total_inversion += euro_to
-
-                if "EUR" in the_stats and "quantity_to" in the_stats["EUR"] and "quantity_from" in the_stats["EUR"]:
-                    total_inversion_euro += total_inversion - euro_from
-                
-                # Guardar los datos de cálculos en la sesión
-                session['processed_stats'] = processed_stats
-                session['the_stats'] = the_stats
-                session['total_inversion'] = total_inversion
-                session['total_inversion_euro'] = total_inversion_euro
-
-                # Redireccionar a la misma página para mostrar los resultados sin realizar cálculos nuevamente
-                return redirect(url_for('status'))
-
-            # ... (resto del código de manejo de errores) ...
+        elif response.status_code == 400:
+            flash('Error en la petición')
+        elif response.status_code == 401:
+            flash('Error: Verifique La Clave apikey')
+        elif response.status_code == 403:
+            flash('Error: apikey no tiene privilegios')
+        elif response.status_code == 429:
+            flash('Error: Se ha alcanzado el límite de peticiones a la API')
+        elif response.status_code == 550:
+            flash('Error: no se encontraron datos')
+        else:
+            flash(f"Error al obtener la tasa de cambio: {response.status_code}")
 
         return render_template("status.html", stats=processed_stats, original_stats=the_stats, title="Status", total_inversion=total_inversion, total_inversion_euro=total_inversion_euro)
 
