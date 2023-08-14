@@ -24,7 +24,7 @@ pip install -r requirements.txt
 2.Configura las variables de entorno creando un archivo `.env` en el directorio principal. El archivo `.env` debe contener la siguiente información:
 
 SECRET_KEY="lolailo" (dejalo asi mon, ahora lolailo sera mi clave para todo)
-FLASK_APP="main.py" # o el nombre de tu archivo principal de la aplicación
+FLASK_APP="main.py" 
 FLASK_DEBUG="True" # Establece en "False" para producción
 FLASK_API_KEY="tu_api_key_aqui"
 FLASK_PATH_SQLITE="data/movement"

@@ -3,7 +3,7 @@ import datetime
 from flask import render_template, request, redirect, flash, session, url_for
 from my_wallet import app
 from my_wallet.forms import MovementForm
-from my_wallet.models import MovementDAOsqlite, CURRENCIES, Registros, consulta
+from my_wallet.models import MovementDAOsqlite, CURRENCIES, Registros
 import time
 dao = MovementDAOsqlite(app.config.get("PATH_SQLITE"))
 
@@ -92,8 +92,8 @@ def Purchase():
 
                     # Validar que haya suficientes monedas disponibles para la compra
                     if currency_from != "EUR":
-                        cantidad_actual = consulta().get(currency_from, {}).get("quantity_to", 0.0)
-                        cantidad_compra = consulta().get(currency_from, {}).get("quantity_from", 0.0)
+                        cantidad_actual = dao.consulta().get(currency_from, {}).get("quantity_to", 0.0)
+                        cantidad_compra = dao.consulta().get(currency_from, {}).get("quantity_from", 0.0)
                         se_puede = cantidad_actual - cantidad_compra
 
                         if se_puede <= quantity_in:
@@ -124,7 +124,7 @@ def Purchase():
 def status():
     try:
         base = "EUR"
-        the_stats = consulta()  # consulta a la BD
+        the_stats = dao.consulta()  # consulta a la BD
         total_inversion = 0.0  
         total_inversion_euro = 0.0
         processed_stats = {}  # Recolectar los datos procesados en un diccionario

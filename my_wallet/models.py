@@ -2,6 +2,7 @@ from datetime import *
 import os
 import sqlite3
 import requests
+from my_wallet import app
 
 CURRENCIES =  ["EUR", "BTC",
     "ETH", "USDT",
@@ -158,32 +159,31 @@ class MovementDAOsqlite:
         return lista
 
 
-        
-def consulta():
-    query = """
+    def consulta(self):
+        query = """
         SELECT currency_from, currency_to, quantity_from, quantity_to FROM movements
-    """
+         """
     
-    conn = sqlite3.connect("data/movements")  
-    cur = conn.cursor()
-    cur.execute(query)
-    data = cur.fetchall()
-    conn.close()
+        conn = sqlite3.connect(self.path)
+        cur = conn.cursor()
+        cur.execute(query)
+        data = cur.fetchall()
+        conn.close()
 
     # Diccionario para realizar el seguimiento de las sumas de quantity_from y quantity_to por currency
-    sums_by_currency = {}
+        sums_by_currency = {}
 
-    for currency_from, currency_to, quantity_from, quantity_to in data:
+        for currency_from, currency_to, quantity_from, quantity_to in data:
 
-        if currency_from not in sums_by_currency:
-            sums_by_currency[currency_from] = {"quantity_from": 0.0, "quantity_to": 0.0}
-        if currency_to not in sums_by_currency:
-            sums_by_currency[currency_to] = {"quantity_from": 0.0, "quantity_to": 0.0}
+            if currency_from not in sums_by_currency:
+                sums_by_currency[currency_from] = {"quantity_from": 0.0, "quantity_to": 0.0}
+            if currency_to not in sums_by_currency:
+                sums_by_currency[currency_to] = {"quantity_from": 0.0, "quantity_to": 0.0}
 
 
-        sums_by_currency[currency_from]["quantity_from"] += quantity_from
-        sums_by_currency[currency_to]["quantity_to"] += quantity_to
-        
+            sums_by_currency[currency_from]["quantity_from"] += quantity_from
+            sums_by_currency[currency_to]["quantity_to"] += quantity_to
+            
 
-    return sums_by_currency
+        return sums_by_currency
 
