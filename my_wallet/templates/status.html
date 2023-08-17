@@ -29,7 +29,7 @@
     
     {% for currency, data in original_stats.items() %}
         {% if currency == "EUR" and data.quantity_from is not none %}
-            <h6>Total de inversión en Euros: {{ data.quantity_from }}</h6>
+            <h6>Total de inversión en Euros: {{ data.quantity_to - data.quantity_from  }}</h6>
         {% endif %}
     {% endfor %}
     

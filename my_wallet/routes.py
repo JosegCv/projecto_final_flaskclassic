@@ -27,9 +27,22 @@ def Purchase():
         return render_template("purchase.html", the_form=form, date_now=fecha, p_u=precio_u)
     elif request.method == "POST" and form.validate_on_submit():
         try:
-            if 'calculate' in request.form:  # Botón "Calcular" presionado
-                # Realizar la llamada a la API
+            if 'calculate' in request.form:  
+                # Obtener los datos del formulario
                 currency_from = form.currency_in.data
+                quantity_in = float(form.quantity_in.data)
+
+                # Verificar si hay suficientes monedas disponibles para la compra
+                if currency_from != "EUR":
+                    cantidad_actual = dao.consulta().get(currency_from, {}).get("quantity_to", 0.0)
+                    cantidad_compra = dao.consulta().get(currency_from, {}).get("quantity_from", 0.0)
+                    se_puede = cantidad_actual - cantidad_compra
+
+                    if se_puede < quantity_in:  # Cambiado <= a <
+                        flash(f'No tienes suficientes monedas para realizar esta compra')
+                        return render_template("purchase.html", the_form=form, date_now=fecha, p_u=precio_u, act=cantidad_actual)
+
+                # Realizar la llamada a la API para obtener la tasa de cambio
                 currency_to = form.currency_out.data
                 if currency_from == currency_to:
                     flash("Error: Las Monedas No Pueden Ser Iguales")
@@ -46,26 +59,12 @@ def Purchase():
                     session['precio_u'] = float(rate)
 
                     # Calcular la cantidad de moneda de destino
-                    quantity_in = float(form.quantity_in.data)
                     quantity_out = quantity_in * float(rate)
 
                     session['currency_from'] = currency_from
                     session['currency_to'] = currency_to
 
                     return render_template("purchase.html", the_form=form, date_now=fecha, p_u=precio_u, quantity=quantity_out)
-                elif response.status_code == 400:
-                    flash('Error en la peticion')
-                elif response.status_code == 401:
-                    flash('Error :Verifique La Clave apikey')
-                elif response.status_code == 403:
-                    flash('error: apikey no privileges')
-                elif response.status_code == 429:
-                    flash('error : Se a Alcanzado El limite De Peticions a la api')
-                elif response.status_code == 550:
-                    flash('error: no se encontraron datos')
-                else:
-                    flash(f"Error al obtener la tasa de cambio: {response.status_code}")
-                return render_template("purchase.html", the_form=form, date_now=fecha, p_u=precio_u)
 
             elif "comprar" in request.form:  # Boton "Comprar" presionado
                 # Obtener los datos del formulario
@@ -90,7 +89,7 @@ def Purchase():
                         flash(f'La cantidad a comprar debe ser un número positivo')
                         return render_template("purchase.html", the_form=form, date_now=fecha, p_u=precio_u)
 
-                    # Validar que haya suficientes monedas disponibles para la compra
+                    '''              # Validar que haya suficientes monedas disponibles para la compra
                     if currency_from != "EUR":
                         cantidad_actual = dao.consulta().get(currency_from, {}).get("quantity_to", 0.0)
                         cantidad_compra = dao.consulta().get(currency_from, {}).get("quantity_from", 0.0)
@@ -99,15 +98,15 @@ def Purchase():
                         if se_puede <= quantity_in:
                             flash(f'No tienes suficientes monedas para realizar esta compra')
                             return render_template("purchase.html", the_form=form, date_now=fecha, p_u=precio_u, act=cantidad_actual)
-
+                            '''
                     # Insertar los datos en la base
-                    dao.insert(Registros(fecha, currency_from, quantity_in, currency_to, quantity_out, precio_u))
+                dao.insert(Registros(fecha, currency_from, quantity_in, currency_to, quantity_out, precio_u))
                         # Limpiar la variable de sesión después de la compra
-                    session.pop("precio_u", None)
-                    session.pop("currency_from", None)
-                    session.pop("currency_to", None)
+                session.pop("precio_u", None)
+                session.pop("currency_from", None)
+                session.pop("currency_to", None)
 
-                    return redirect("/")
+                return redirect("/")
             else:
                 return render_template("purchase.html", the_form=form, date_now=fecha, p_u=precio_u)
 
@@ -164,7 +163,7 @@ def status():
                 total_inversion += currency_data["cantidad_multiplicada"]
 
             if "EUR" in the_stats and "quantity_to" in the_stats["EUR"] and "quantity_from" in the_stats["EUR"]:
-                total_inversion_euro = total_inversion - the_stats["EUR"]["quantity_from"]
+                total_inversion_euro = total_inversion - the_stats["EUR"]["quantity_from"] + the_stats["EUR"]["quantity_to"]
             else:
                 total_inversion_euro = 0.0
 

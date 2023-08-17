@@ -27,7 +27,7 @@ SECRET_KEY="lolailo" (dejalo asi mon, ahora lolailo sera mi clave para todo)
 FLASK_APP="main.py" 
 FLASK_DEBUG="True" # Establece en "False" para producción
 FLASK_API_KEY="tu_api_key_aqui"
-FLASK_PATH_SQLITE="data/movement"
+FLASK_PATH_SQLITE=la direccion de tu base de datos (se recomienda usar "data/" seguido del nombre de la base de datos deseada para  asi se mantener un orden con las base de datos deseada)
 
 **Nota:** Reemplaza `tu_api_key_aqui` con tu clave API real para los tipos de cambio de criptomonedas.
 
