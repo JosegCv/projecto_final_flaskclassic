@@ -5,6 +5,8 @@ from my_wallet import app
 from my_wallet.forms import MovementForm
 from my_wallet.models import MovementDAOsqlite, CURRENCIES, Registros
 import time
+import sqlite3
+
 dao = MovementDAOsqlite(app.config.get("PATH_SQLITE"))
 
 @app.route("/")
@@ -12,8 +14,9 @@ def index():
     try:
         the_movs = dao.get_all()
         return render_template("index.html", movs=the_movs, title="Inicio")
-    except ValueError as e:
-        flash("Su fichero de datos está corrupto")
+    except Exception as e:
+
+        flash("Su fichero de datos está corrupto, Cierre Y Acceda a la pagina de nuevo para refrescar")
         flash(str(e))
         return render_template("index.html", movs=[], title="Inicio")
     
@@ -109,15 +112,19 @@ def Purchase():
                 return redirect("/")
             else:
                 return render_template("purchase.html", the_form=form, date_now=fecha, p_u=precio_u)
-
+            
+        except sqlite3.OperationalError as e:
+            # Captura el error si la tabla no existe y muestra un mensaje de error
+            flash("La tabla 'movements' no existe en la base de datos. Crea la tabla primero.")
+            return render_template("purchase.html", the_form=form, date_now=fecha, p_u=precio_u)
         except requests.exceptions.RequestException as e:
             flash(f'Error de conexión: {e}')
             return render_template("purchase.html", the_form=form, date_now=fecha, p_u=precio_u)
 
     else:
-        flash(f'Use a Valid positive Number')
+        flash(f'error en la peticion porfavor intentelo de nuevo')
         return render_template("purchase.html", the_form=form, date_now=fecha, p_u=precio_u)
-
+        
 
 @app.route("/status", methods=["GET"])
 def status():
@@ -182,8 +189,8 @@ def status():
 
         return render_template("status.html", stats=processed_stats, original_stats=the_stats, title="Status", total_inversion=total_inversion, total_inversion_euro=total_inversion_euro)
 
-    except ValueError as e:
+    except Exception as e:
         flash("Su fichero de datos está corrupto")
         flash(str(e))
 
-    return render_template("status.html", stats={}, title="Status")
+    return render_template("status.html", stats={}, original_stats={}, title="Status", total_inversion=0.0, total_inversion_euro=0.0)

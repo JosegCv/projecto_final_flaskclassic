@@ -1,5 +1,5 @@
-SECRET_KEY=" lolailo (dejalo asi mon, ahora lolailo sera mi clave para todo)"
+SECRET_KEY="lolailo (dejalo asi mon, ahora lolailo sera mi clave para todo)"
 FLASK_APP=main.py
 FLASK_DEBUG="True | False"
 FLASK_API_KEY="aqui va tu APi KEY"
-FLASK_PATH_SQLITE="data/movements" o la ruta donde poseas tu base de datos normalmente ya se creara una en la carpeta data
+FLASK_PATH_SQLITE="ruta de la base de datos por ejemplo: data/datos"
